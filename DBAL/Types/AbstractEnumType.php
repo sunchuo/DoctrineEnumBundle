@@ -163,9 +163,17 @@ abstract class AbstractEnumType extends Type
      *
      * @return mixed[] Values for the ENUM field
      */
-    public static function getValues(): array
+    public static function getValues(string $key = null): array
     {
-        return \array_keys(static::$choices);
+        if ($key === null) {
+            return \array_keys(static::$choices);
+        }
+
+        if (isset(static::$$key)) {
+            return static::$$key;
+        }
+
+        throw new InvalidArgumentException(\sprintf('Invalid values "%s" for ENUM type "%s".', (string) $key, static::class));
     }
 
     /**

@@ -30,6 +30,7 @@ class EnumValuesAsArrayTwigExtension extends AbstractEnumTwigExtension
     public function getFunctions(): array
     {
         return [
+
             new TwigFunction('enum_values', [$this, 'getEnumValuesAsArray']),
             new TwigFunction('enum_readable_values', [$this, 'getReadableEnumValuesAsArray']),
         ];
@@ -43,9 +44,10 @@ class EnumValuesAsArrayTwigExtension extends AbstractEnumTwigExtension
      *
      * @return string[]
      */
-    public function getEnumValuesAsArray(string $enumType): array
+    public function getEnumValuesAsArray(string $enumType, string $key = null): array
     {
-        return $this->callEnumTypeStaticMethod($enumType, 'getValues');
+        $function = $this->callEnumTypeStaticMethod($enumType, 'getValues');
+        return $function($key);
     }
 
     /**
@@ -58,7 +60,8 @@ class EnumValuesAsArrayTwigExtension extends AbstractEnumTwigExtension
      */
     public function getReadableEnumValuesAsArray(string $enumType): array
     {
-        return $this->callEnumTypeStaticMethod($enumType, 'getReadableValues');
+        $function = $this->callEnumTypeStaticMethod($enumType, 'getReadableValues');
+        return $function();
     }
 
     /**
@@ -71,7 +74,7 @@ class EnumValuesAsArrayTwigExtension extends AbstractEnumTwigExtension
      *
      * @return string[]
      */
-    private function callEnumTypeStaticMethod(string $enumType, string $staticMethodName): array
+    private function callEnumTypeStaticMethod(string $enumType, string $staticMethodName): callable
     {
         if ($this->hasRegisteredEnumTypes()) {
             $this->throwExceptionIfEnumTypeIsNotRegistered($enumType);
@@ -82,7 +85,7 @@ class EnumValuesAsArrayTwigExtension extends AbstractEnumTwigExtension
                 throw new LogicException(\sprintf('%s::%s is not a valid exception', $this->registeredEnumTypes[$enumType], $staticMethodName));
             }
 
-            return $function();
+            return $function;
         }
 
         throw $this->createNoRegisteredEnumTypesException();
