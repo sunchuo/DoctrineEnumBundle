@@ -170,7 +170,7 @@ abstract class AbstractEnumType extends Type
         }
 
         if (isset(static::$$key)) {
-            return \array_keys(static::$$key);
+            return static::$$key;
         }
 
         throw new InvalidArgumentException(\sprintf('Invalid values "%s" for ENUM type "%s".', (string) $key, static::class));
@@ -204,8 +204,12 @@ abstract class AbstractEnumType extends Type
             return static::$choices;
         }
 
-        if (isset(static::$$key)) {
-            return static::$$key;
+        if (isset(static::$$key) && is_array(static::$$key)) {
+            $result = [];
+            foreach (static::$$key as $key) {
+                $result[$key] = static::getReadableValue($key);
+            }
+            return $result;
         }
 
         throw new InvalidArgumentException(\sprintf('Invalid readable values "%s" for ENUM type "%s".', (string) $key, static::class));
