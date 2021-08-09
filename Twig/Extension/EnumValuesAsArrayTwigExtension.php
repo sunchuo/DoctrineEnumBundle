@@ -58,7 +58,7 @@ class EnumValuesAsArrayTwigExtension extends AbstractEnumTwigExtension
      *
      * @return string[]
      */
-    public function getReadableEnumValuesAsArray(string $enumType): array
+    public function getReadableEnumValuesAsArray(string $enumType, string $key = null): array
     {
         $function = $this->callEnumTypeStaticMethod($enumType, 'getReadableValues');
         return $function();
