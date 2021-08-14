@@ -151,9 +151,21 @@ abstract class AbstractEnumType extends Type
      *
      * @return mixed[]
      */
-    public static function getChoices(): array
+    public static function getChoices(string $key = null): array
     {
-        return \array_flip(static::$choices);
+        if ($key === null) {
+            return \array_flip(static::$choices);
+        }
+
+        if (isset(static::$$key) && is_array(static::$$key)) {
+            $result = [];
+            foreach (static::$$key as $k) {
+                $result[static::getReadableValue($k)] = $k;
+            }
+            return $result;
+        }
+
+        throw new InvalidArgumentException(\sprintf('Invalid choices "%s" for ENUM type "%s".', (string) $key, static::class));
     }
 
     /**
@@ -206,8 +218,8 @@ abstract class AbstractEnumType extends Type
 
         if (isset(static::$$key) && is_array(static::$$key)) {
             $result = [];
-            foreach (static::$$key as $key) {
-                $result[$key] = static::getReadableValue($key);
+            foreach (static::$$key as $k) {
+                $result[$k] = static::getReadableValue($k);
             }
             return $result;
         }
